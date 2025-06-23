@@ -1,7 +1,7 @@
 ﻿using Azure.Storage.Queues.Models;
-using Newtonsoft.Json;
 using System;
 using System.Text;
+using CodeCube.Core.Exentions;
 
 namespace CodeCube.Azure.Storage.Queues.Extensions
 {
@@ -30,33 +30,19 @@ namespace CodeCube.Azure.Storage.Queues.Extensions
             byte[] data = Convert.FromBase64String(message.MessageText);
             string json = Encoding.UTF8.GetString(data);
 
-            return Deserialize<T>(json, true);
+            //return Deserialize<T>(json, true);
+            return json.DeserializeFromCamelCase<T>();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <typeparam name="T">The type of object to return.</typeparam>
-        /// <param name="message">The <see cref="QueueMessage"/> to retrieve the content from.</param>
-        /// <param name="ignoreMissingMembersInObject">Should missing properties from the deserialized message be ignored or not?</param>
-        /// <returns>The content from the <see cref="QueueMessage"/> deserialized as <see cref="T"/></returns>
-        public static T As<T>(this QueueMessage message, bool ignoreMissingMembersInObject = true) where T : class
-        {
-            byte[] data = Convert.FromBase64String(message.MessageText);
-            string json = Encoding.UTF8.GetString(data);
-
-            return Deserialize<T>(json, ignoreMissingMembersInObject);
-        }
-
-        #region privates
-        private static T Deserialize<T>(string json, bool ignoreMissingMembersInObject) where T : class
-        {
-            MissingMemberHandling missingMemberHandling = MissingMemberHandling.Error;
-            if (ignoreMissingMembersInObject)
-                missingMemberHandling = MissingMemberHandling.Ignore;
-
-            return JsonConvert.DeserializeObject<T>(json, new JsonSerializerSettings { MissingMemberHandling = missingMemberHandling });
-        }
-        #endregion
+        // #region privates
+        // private static T Deserialize<T>(string json, bool ignoreMissingMembersInObject) where T : class
+        // {
+        //     MissingMemberHandling missingMemberHandling = MissingMemberHandling.Error;
+        //     if (ignoreMissingMembersInObject)
+        //         missingMemberHandling = MissingMemberHandling.Ignore;
+        //
+        //     return JsonConvert.DeserializeObject<T>(json, new JsonSerializerSettings { MissingMemberHandling = missingMemberHandling });
+        // }
+        // #endregion
     }
 }
